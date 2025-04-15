@@ -1,0 +1,291 @@
+realm:
+  default:
+    nid: "35d06611-bba2-45e0-b355-6ef4da7b67cd"
+    autoscaling:
+      enabled: true
+      minReplicas: 2
+      maxReplicas: 5
+    resources:
+      requests:
+        cpu: 100m
+        memory: 64Mi
+      limits:
+        cpu: 200m
+        memory: 128Mi
+  rover:
+    nid: "8bb54297-3ce8-45bd-a95c-f672b55f4e62"
+    autoscaling:
+      enabled: false
+    replicaCount: 2
+    resources:
+      requests:
+        cpu: 100m
+        memory: 64Mi
+      limits:
+        cpu: 200m
+        memory: 128Mi
+    db:
+      options:
+        - key: "max_conns"
+          value: 2
+        - key: "max_idle_conns"
+          value: 1
+  team-default:
+    nid: "f9a50ea3-c4a9-4f8d-be1f-fe9f1e95b4e6"
+    autoscaling:
+      enabled: false
+    replicaCount: 2
+    resources:
+      requests:
+        cpu: 100m
+        memory: 64Mi
+      limits:
+        cpu: 200m
+        memory: 128Mi
+    db:
+      options:
+        - key: "max_conns"
+          value: 2
+        - key: "max_idle_conns"
+          value: 1
+component:
+  hydra:
+    image:
+      repository: mtr.devops.telekom.de/tardis-internal/galatea/sirius-hydra
+      pullPolicy: Always
+      tag: 1-3-0
+    autoMigrate: "false"
+    dev: "false"
+    config:
+      urls:
+        self:
+          issuer: "https://hydra.dev"
+      log:
+        level: info
+        format: json
+        leak_sensitive_values: false
+      dsn: "REPLACE_WITH_ACTUAL_VALUE"
+      serve:
+        cookies:
+          domain: prod.dhei.telekom.de
+          same_site_mode: Lax
+          names:
+            login_csrf: hydra_login_csrf_prod
+            consent_csrf: hydra_consent_csrf_prod
+            session: hydra_session_prod
+        public:
+          port: 4444
+          cors:
+            enabled: true
+            allowed_origins:
+            - https://hoppscotch.live.dhei.telekom.de
+            - https://developer.telekom.de
+            - https://hoppscotch.calypso.aws.telekom.de
+            allowed_methods:
+            - POST
+            - GET
+            allowed_headers:
+            - Authorization
+            exposed_headers:
+            - Content-Type
+            debug: false
+        admin:
+          port: 4445
+          cors:
+            enabled: true
+            allowed_origins:
+            - https://hoppscotch.live.dhei.telekom.de
+            - https://developer.telekom.de
+            - https://hoppscotch.calypso.aws.telekom.de
+            allowed_methods:
+            - POST
+            - GET
+            - PUT
+            - PATCH
+            - DELETE
+            allowed_headers:
+            - Authorization
+            exposed_headers:
+            - Content-Type
+            debug: false
+        tls:
+          allow_termination_from:
+          - 127.0.0.1/32
+      secrets:
+        system:
+        - "CONFIGURE_ENV_SPECIFIC_SECRET"
+      strategies:
+        access_token: jwt
+      ttl:
+        access_token: 90m
+        refresh_token: 8h
+        id_token: 1h
+      oauth2:
+        token_hook:
+        url: "http://localhost:4475"
+      hashers:
+        bcrypt:
+          cost: 4
+      session:
+        encrypt_at_rest: true
+      pkce:
+        enforced: false
+        enforced_for_public_clients: false
+      allowed_top_level_claims:
+        - "username"
+        - "idp"
+        - "typ"
+        - "roles"
+        - "allowed-origins"
+        - "act"
+        - "scope"
+        - "client_id"
+        - "azp"
+        - "originStargate"
+        - "originZone"
+    tracing:
+      enabled: false
+      provider: zipkin
+      samplingRatio: 0.1
+      spanUrl: http://guardians-drax-collector.skoll:9411/api/v2/spans
+      url: http://localhost:4445/admin
+    customClaims:
+      originStargate: "https://stargate.dev.url"
+      originZone: "aws"
+  tokenHook:
+    image:
+      repository:
+      pullPolicy:
+      tag:
+    enabled: true
+    config: 
+      url: "?"
+  sidecar:
+    image:
+      repository:
+      pullPolicy:
+      tag:
+    enabled: true
+    config:
+      trustedIssuer:
+      jwkPath:
+      basicAuthUsername: ""
+      basicAuthPassword: ""
+  watcher:
+    image: 
+      repository: oryd
+      pullPolicy: Always
+      tag: 0.0.2
+    enabled: false
+    config:
+      mountFile: ''
+deployment:
+  securityContext:
+    pod:
+      runAsNonRoot: true
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
+      supplementalGroups: [ 1000 ]
+    container:
+      allowPrivilegeEscalation: false
+      privileged: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop: ["ALL"]
+  pdb:
+    enabled: "false"
+    minAvailable: 1
+  labels: { }
+  annotations: { }
+  nodeSelector: { }
+  tolerations: [ ]
+  serviceAccount:
+    create: false
+    annotations: { }
+    name: ""
+  extraVolumes: [ ]
+  extraVolumeMounts: [ ]
+  livenessProbe:
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    failureThreshold: 5
+  readinessProbe:
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    failureThreshold: 5
+  startupProbe:
+    initialDelaySeconds: 1
+    periodSeconds: 1
+    failureThreshold: 5
+  preStopSleepTime: 10
+
+  automountServiceAccountToken: true
+
+  extraContainers: |
+     - name: jaeger-agent
+       image: mtr.devops.telekom.de/tardis-internal/skoll/jaeger-agent
+       args:
+         - '--reporter.grpc.host-port=guardians-drax-collector.skoll:14250'
+       ports:
+         - containerPort: 5775
+           protocol: UDP
+         - containerPort: 6831
+           protocol: UDP
+         - containerPort: 6832
+           protocol: UDP
+         - containerPort: 5778
+           protocol: TCP
+service:
+  public:
+    enabled: true
+    type: ClusterIP
+    port: 4444
+    name: http
+    annotations:
+      prometheus.io/path: /metrics/prometheus
+      prometheus.io/port: '3001'
+      prometheus.io/scrape: 'true'
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+    labels: { }
+  admin:
+    enabled: true
+    isDirectAccess: false
+    type: ClusterIP
+    port: 4445
+    name: http
+    annotations:
+      prometheus.io/path: /admin/metrics/prometheus
+      prometheus.io/port: '4445'
+      prometheus.io/scrape: 'true'
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+    labels: { }
+  sidecar:
+    enabled: true
+    name: sidecar
+    port: 4455
+  tokenHook:
+    enabled: true
+    port: 4475
+ingress:
+  className: "triton-ingress"
+  annotations:
+    kubernetes.io/tls-acme: 'true'
+    nginx.ingress.kubernetes.io/force-ssl-redirect: 'true'
+    nginx.ingress.kubernetes.io/backend-protocol: HTTP
+    tif.telekom.de/group: tif
+  public:
+    enabled: false
+  admin:
+    enabled: false
+job:
+  janitor:
+    schedule: "0 2 * * *"
+    labels:
+      app.kubernetes.io/part-of: "sirius-hydra"
+      app.kubernetes.io/name: "sirius-hydra-janitor-cleanup"
+      app.kubernetes/zone: "aws"
+  jwk:
+    enabled: "false"

@@ -1,0 +1,15 @@
+image: $MTR_REGISTRY_COMMON/infra-pipeline-base:1.1
+
+include:
+  - template: Jobs/SAST.gitlab-ci.yml
+
+variables:
+  SCAN_KUBERNETES_MANIFESTS: "true"
+
+stages:
+  - test
+
+check-helm:
+  stage: test
+  script:
+    - helm lint ./ --values ./values.yaml --debug --strict
