@@ -1,0 +1,39 @@
+{{- if .Values.service.admin.enabled }}
+{{- range $realmName, $realm := .Values.realm }}
+{{- with $ }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "sirius.fullname" . }}-admin-{{ $realmName }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+{{ include "sirius.labels" . | indent 4 }}
+    {{- with .Values.service.admin.labels }}
+      {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with .Values.service.admin.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.service.admin.type }}
+  ports:
+    {{- if .Values.service.admin.isDirectAccess }}
+    - port: {{ .Values.service.admin.port }}
+      targetPort: http-admin
+      protocol: TCP
+      name: {{ .Values.service.admin.name }}
+    {{- else }}
+    - port: {{ .Values.service.admin.port }}
+      targetPort: http-sidecar
+      protocol: TCP
+      name: {{ .Values.service.sidecar.name }}
+    {{- end }}
+  selector:
+    app.kubernetes.io/name: {{ include "sirius.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    sirius.realm: {{ $realmName }}
+{{- end }}
+---
+{{- end }}
+{{- end }}
