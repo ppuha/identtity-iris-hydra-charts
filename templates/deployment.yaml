@@ -64,28 +64,6 @@ spec:
       securityContext:
         {{- toYaml .Values.deployment.securityContext.pod | nindent 8 }}
       containers:
-        {{- if .Values.component.watcher.enabled }}
-        - name: watcher
-          securityContext:
-            {{- toYaml .Values.deployment.securityContext.container | nindent 12 }}
-          image: "{{ include "imageRef" .Values.component.watcher.image }}"
-          command:
-            - /bin/bash
-            - -c
-            - |
-{{ .Files.Get "files/watch.sh" | printf "%s" | indent 14 }}
-          env:
-            - name: NAMESPACE
-              value: {{ .Release.Namespace | quote }}
-            - name: WATCH_FILE
-              value: {{ .Values.component.watcher.mountFile | quote }}
-            - name: DEPLOYMENT_SELECTOR
-              value: 'app.kubernetes.io/name={{ include "sirius.name" . }}'
-          volumeMounts:
-          {{- with .Values.deployment.extraVolumeMounts }}
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-        {{- end }}
         - name: {{ .Release.Name }}-hydra
           image: "{{ include "imageRef" .Values.component.hydra.image }}"
           imagePullPolicy: {{ .Values.component.hydra.image.pullPolicy }}

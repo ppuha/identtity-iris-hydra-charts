@@ -171,14 +171,6 @@ component:
       jwkPath:
       basicAuthUsername: ""
       basicAuthPassword: ""
-  watcher:
-    image: 
-      repository: oryd
-      pullPolicy: Always
-      tag: 0.0.2
-    enabled: false
-    config:
-      mountFile: ''
 deployment:
   securityContext:
     pod:
