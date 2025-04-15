@@ -161,8 +161,6 @@ spec:
             {{- toYaml $realm.resources | nindent 12 }}
           securityContext:
             {{- toYaml .Values.deployment.securityContext.container | nindent 12 }}
-          lifecycle:
-            {{- toYaml .Values.deployment.lifecycle | nindent 12 }}
         {{- if .Values.service.sidecar.enabled }}
         - name: {{ .Release.Name }}-sidecar
           image: "{{ include "imageRef" .Values.component.sidecar.image }}"
