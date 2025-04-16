@@ -269,9 +269,33 @@ ingress:
     nginx.ingress.kubernetes.io/backend-protocol: HTTP
     tif.telekom.de/group: tif
   public:
-    enabled: false
+    enabled: true
+    tls:
+      - hosts:
+        - *host
+    hosts:
+      - host: *host
+        paths:
+          - path: /
+            pathType: Prefix
+          - path: /broker
+            pathType: Prefix
+    host: *host
   admin:
     enabled: false
+  sidecar:
+    tls:
+      - hosts:
+        - *host
+    hosts:
+      - host: *host
+        paths:
+        - path: /admin/clients
+          pathType: Prefix
+        - path: /oauth2/introspect
+          pathType: Prefix
+    path: /
+    pathType: ImplementationSpecific
 job:
   janitor:
     schedule: "0 2 * * *"
@@ -281,3 +305,6 @@ job:
       app.kubernetes/zone: "aws"
   jwk:
     enabled: "false"
+global:
+  imagePullSecrets:
+  - name: eni-pull-mtr-devops-tardis-internal-secret

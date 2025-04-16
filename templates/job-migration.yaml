@@ -15,22 +15,13 @@ metadata:
     {{- with .Values.deployment.labels }}
       {{- toYaml . | nindent 4 }}
     {{- end }}
-  annotations:
-    {{- with .Values.job.annotations }}
-      {{- toYaml . | nindent 4 }}
-    {{- end }}
     helm.sh/hook-weight: "1"
     helm.sh/hook: "pre-install, pre-upgrade"
     helm.sh/hook-delete-policy: "before-hook-creation,hook-succeeded"
 spec:
   template:
-    {{- with .Values.job.annotations }}
-    metadata: 
-      annotations:
-        {{- toYaml . | nindent 8 }}
-    {{- end }}
     spec:
-    {{- with .Values.imagePullSecrets }}
+    {{- with .Values.global.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
     {{- end }}
@@ -51,10 +42,6 @@ spec:
         volumeMounts:
 {{ toYaml .Values.deployment.extraVolumeMounts | indent 10 }}
          {{- end }}
-      {{- if .Values.deployment.extraInitContainers }}
-      initContainers:
-{{ tpl .Values.deployment.extraInitContainers . | indent 8 }}
-      {{- end }}
       restartPolicy: Never
       {{- if .Values.deployment.extraVolumes }}
       volumes:
