@@ -67,7 +67,7 @@ spec:
           volumeMounts:
             - name: {{ include "sirius.name" . }}-config-volume
               mountPath: /etc/config
-              readOnly: true
+              readOnly: "true"
             {{- if .Values.deployment.extraVolumeMounts }}
 {{ toYaml .Values.deployment.extraVolumeMounts | indent 12 }}
             {{- end }}
@@ -108,7 +108,7 @@ spec:
             {{- toYaml .Values.deployment.startupProbe | nindent 12 }}
           env:
             - name: NETWORK_STRATEGY
-              value: static
+              value: "static"
             - name: NETWORK_ID
               value: {{ $realm.nid }}
             - name: DSN
@@ -142,9 +142,9 @@ spec:
             {{- toYaml .Values.deployment.securityContext.container | nindent 12 }}
           env:
             - name: SIDECAR_PORT
-              value: "{{ .Values.service.sidecar.port }}"
+              value: {{ .Values.service.sidecar.port | quote }}
             - name: HYDRA_ADMIN_PORT
-              value: "{{ .Values.service.admin.port }}"
+              value: {{ .Values.service.admin.port | quote }}
             - name: TRUSTED_ISSUER
               value: {{ .Values.component.sidecar.config.trustedIssuer | quote }}
             - name: JWK_PATH
@@ -161,7 +161,7 @@ spec:
                   key: HYDRA_ADMIN_PASSWORD
           ports:
             - name: http-sidecar
-              containerPort: {{ .Values.service.sidecar.port }}
+              containerPort: {{ .Values.service.sidecar.port | quote }}
               protocol:  TCP
           livenessProbe:
             httpGet:
@@ -197,14 +197,14 @@ spec:
           image: "{{ include "imageRef" .Values.component.tokenHook.image }}"
           env:
             - name: TOKEN_HOOK_PORT
-              value: "{{ .Values.service.tokenHook.port }}"
+              value: {{ .Values.service.tokenHook.port | quote }}
             - name: CLAIM_ORIGIN_ZONE
               value: {{ .Values.component.hydra.customClaims.originZone }}
             - name: CLAIM_ORIGIN_STARGATE
               value: {{ .Values.component.hydra.customClaims.originStargate }}
           ports:
             - name: http-token-hook
-              containerPort: {{ .Values.service.tokenHook.port }}
+              containerPort: {{ .Values.service.tokenHook.port | quote }}
               protocol: TCP
           imagePullPolicy: {{ .Values.component.tokenHook.image.pullPolicy}}
         {{- end }}

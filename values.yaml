@@ -54,8 +54,8 @@ component:
       repository: mtr.devops.telekom.de/tardis-internal/galatea/sirius-hydra
       pullPolicy: Always
       tag: 1-3-0
-    autoMigrate: "false"
-    dev: "false"
+    autoMigrate: false
+    dev: false
     config:
       urls:
         self:
@@ -186,7 +186,7 @@ deployment:
       capabilities:
         drop: ["ALL"]
   pdb:
-    enabled: "false"
+    enabled: false
     minAvailable: 1
   labels: { }
   annotations: { }
@@ -261,6 +261,7 @@ service:
   tokenHook:
     enabled: true
     port: 4475
+    
 ingress:
   className: "triton-ingress"
   annotations:
@@ -272,23 +273,20 @@ ingress:
     enabled: true
     tls:
       - hosts:
-        - *host
     hosts:
-      - host: *host
+      - host:
         paths:
           - path: /
             pathType: Prefix
           - path: /broker
             pathType: Prefix
-    host: *host
   admin:
     enabled: false
   sidecar:
     tls:
       - hosts:
-        - *host
     hosts:
-      - host: *host
+      - host:
         paths:
         - path: /admin/clients
           pathType: Prefix
@@ -304,7 +302,7 @@ job:
       app.kubernetes.io/name: "sirius-hydra-janitor-cleanup"
       app.kubernetes/zone: "aws"
   jwk:
-    enabled: "false"
+    enabled: false
 global:
   imagePullSecrets:
   - name: eni-pull-mtr-devops-tardis-internal-secret

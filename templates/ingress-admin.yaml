@@ -32,7 +32,7 @@ spec:
     {{- end }}
   {{- end }}
   rules:
-    {{- range $host := .Values.ingress.admin.hosts }}
+    {{- range $host := .Values.ingress.admin.tls.hosts }}
     - host: {{ $host.host | quote }}
       http:
         paths:
