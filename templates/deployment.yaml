@@ -46,6 +46,10 @@ spec:
         {{- end }}
     spec:
       terminationGracePeriodSeconds: 60
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       volumes:
         - name: cache-volume
           emptyDir: {}
@@ -108,7 +112,7 @@ spec:
             {{- toYaml .Values.deployment.startupProbe | nindent 12 }}
           env:
             - name: NETWORK_STRATEGY
-              value: "static"
+              value: static
             - name: NETWORK_ID
               value: {{ $realm.nid }}
             - name: DSN
