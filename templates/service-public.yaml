@@ -7,10 +7,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "sirius.fullname" . }}-public-{{ $realmName }}
+  name: {{ include "iris.fullname" . }}-public-{{ $realmName }}
   namespace: {{ .Release.Namespace }}
   labels:
-{{ include "sirius.labels" . | indent 4 }}
+{{ include "iris.labels" . | indent 4 }}
     {{- with .Values.service.public.labels }}
       {{- toYaml . | nindent 4 }}
     {{- end }}
@@ -26,9 +26,9 @@ spec:
       protocol: TCP
       targetPort: http-public
   selector:
-    app.kubernetes.io/name: {{ include "sirius.name" . }}
+    app.kubernetes.io/name: {{ include "iris.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
-    sirius.realm: {{ $realmName }}
+    iris.realm: {{ $realmName }}
 {{- end }}
 ---
 {{- end }}

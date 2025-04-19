@@ -6,12 +6,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "sirius.fullname" . }}-{{ $realmName }}
+  name: {{ include "iris.fullname" . }}-{{ $realmName }}
   {{- if .Release.Namespace }}
   namespace: {{ .Release.Namespace }}
   {{- end }}
   labels:
-{{ include "sirius.labels" . | indent 4 }}
+{{ include "iris.labels" . | indent 4 }}
     {{- with .Values.deployment.labels }}
       {{- toYaml . | nindent 4 }}
     {{- end }}
@@ -29,14 +29,14 @@ spec:
       maxUnavailable: 50%
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "sirius.name" . }}
+      app.kubernetes.io/name: {{ include "iris.name" . }}
       app.kubernetes.io/instance: {{ .Release.Name }}
-      sirius.realm: {{ $realmName }}
+      iris.realm: {{ $realmName }}
   template:
     metadata:
       labels:
-        sirius.realm: {{ $realmName }}
-{{ include "sirius.labels" . | indent 8 }}
+        iris.realm: {{ $realmName }}
+{{ include "iris.labels" . | indent 8 }}
         {{- with .Values.deployment.labels }}
           {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -53,13 +53,13 @@ spec:
       volumes:
         - name: cache-volume
           emptyDir: {}
-        - name: {{ include "sirius.name" . }}-config-volume
+        - name: {{ include "iris.name" . }}-config-volume
           configMap:
-            name: {{ include "sirius.fullname" . }}
+            name: {{ include "iris.fullname" . }}
         {{- if .Values.deployment.extraVolumes }}
 {{ toYaml .Values.deployment.extraVolumes | indent 8 }}
         {{- end }}
-      serviceAccountName: {{ include "sirius.serviceAccountName" . }} # check if works without
+      serviceAccountName: {{ include "iris.serviceAccountName" . }} # check if works without
       automountServiceAccountToken: {{ .Values.deployment.automountServiceAccountToken }}
       securityContext:
         {{- toYaml .Values.deployment.securityContext.pod | nindent 8 }}
@@ -69,7 +69,7 @@ spec:
           imagePullPolicy: {{ .Values.component.hydra.image.pullPolicy }}
           command: ["hydra"]
           volumeMounts:
-            - name: {{ include "sirius.name" . }}-config-volume
+            - name: {{ include "iris.name" . }}-config-volume
               mountPath: /etc/config
               readOnly: "true"
             {{- if .Values.deployment.extraVolumeMounts }}

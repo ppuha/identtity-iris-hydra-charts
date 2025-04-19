@@ -5,7 +5,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "sirius.name" -}}
+{{- define "iris.name" -}}
 {{- default .Release.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
@@ -14,7 +14,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "sirius.fullname" -}}
+{{- define "iris.fullname" -}}
 {{- if .Values.fullnameOverride -}}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" -}}
 {{- else -}}
@@ -29,13 +29,13 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "sirius.chart" -}}
+{{- define "iris.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 {{/*
 Define release name with chart version.
 */}}
-{{- define "sirius.release" -}}
+{{- define "iris.release" -}}
 {{- printf "%s-%s" .Release.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 {{/*
@@ -43,7 +43,7 @@ Ensure there is always a way to track down source of the deployment.
 It is unlikely AppVersion will be missing, but we will fallback on the
 chart's version in that case.
 */}}
-{{- define "sirius.version" -}}
+{{- define "iris.version" -}}
 {{- if .Chart.AppVersion }}
 {{- .Chart.AppVersion -}}
 {{- else -}}
@@ -54,18 +54,18 @@ chart's version in that case.
 {{/*
 Common labels
 */}}
-{{- define "sirius.labels" -}}
-"app.kubernetes.io/name": {{ include "sirius.name" . | quote }}
+{{- define "iris.labels" -}}
+"app.kubernetes.io/name": {{ include "iris.name" . | quote }}
 "app.kubernetes.io/instance": {{ .Release.Name | quote }}
-"app.kubernetes.io/version": {{ include "sirius.version" . | quote }}
+"app.kubernetes.io/version": {{ include "iris.version" . | quote }}
 "app.kubernetes.io/managed-by": {{ .Release.Service | quote }}
-"helm.sh/chart": {{ include "sirius.release" . | quote }}
+"helm.sh/chart": {{ include "iris.release" . | quote }}
 {{- end -}}
 
 {{/*
 Generate the dsn value
 */}}
-{{- define "sirius.dsn" -}}
+{{- define "iris.dsn" -}}
 {{- if .Values.demo -}}
 memory
 {{- else if .Values.component.hydra.config.dsn -}}
@@ -76,7 +76,7 @@ memory
 {{/*
 Generate the configmap data, redacting secrets
 */}}
-{{- define "sirius.configmap" -}}
+{{- define "iris.configmap" -}}
 {{- $config := unset .Values.component.hydra.config "dsn" -}}
 {{- $config := unset $config "secrets" -}}
 {{- toYaml $config -}}
@@ -85,7 +85,7 @@ Generate the configmap data, redacting secrets
 {{/*
 Generate the urls.issuer value
 */}}
-{{- define "sirius.config.urls.issuer" -}}
+{{- define "iris.config.urls.issuer" -}}
 {{- if .Values.component.hydra.config.urls.self.issuer -}}
 {{- .Values.component.hydra.config.urls.self.issuer }}
 {{- else if .Values.ingress.public.enabled -}}
@@ -99,17 +99,17 @@ http://127.0.0.1:{{ .Values.service.public.port }}/
 {{/*
 Check overrides consistency
 */}}
-{{- define "sirius.check.override.consistency" -}}
+{{- define "iris.check.override.consistency" -}}
 {{- if and .Values.maester.enabled .Values.fullnameOverride -}}
-{{- if not .Values.maester.siriusFullnameOverride -}}
-{{ fail "sirius fullname has been overridden, but the new value has not been provided to maester. Set maester.siriusFullnameOverride" }}
-{{- else if not (eq .Values.maester.siriusFullnameOverride .Values.fullnameOverride) -}}
-{{ fail (tpl "sirius fullname has been overridden, but a different value was provided to maester. {{ .Values.maester.siriusFullnameOverride }} different of {{ .Values.fullnameOverride }}" . ) }}
+{{- if not .Values.maester.irisFullnameOverride -}}
+{{ fail "iris fullname has been overridden, but the new value has not been provided to maester. Set maester.irisFullnameOverride" }}
+{{- else if not (eq .Values.maester.irisFullnameOverride .Values.fullnameOverride) -}}
+{{ fail (tpl "iris fullname has been overridden, but a different value was provided to maester. {{ .Values.maester.irisFullnameOverride }} different of {{ .Values.fullnameOverride }}" . ) }}
 {{- end -}}
 {{- end -}}
 {{- end -}}
 
-{{- define "sirius.utils.joinListWithComma" -}}
+{{- define "iris.utils.joinListWithComma" -}}
 {{- $local := dict "first" true -}}
 {{- range $k, $v := . -}}{{- if not $local.first -}},{{- end -}}{{- $v -}}{{- $_ := set $local "first" false -}}{{- end -}}
 {{- end -}}
@@ -117,9 +117,9 @@ Check overrides consistency
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "sirius.serviceAccountName" -}}
+{{- define "iris.serviceAccountName" -}}
 {{- if .Values.deployment.serviceAccount.create }}
-{{- default (include "sirius.fullname" .) .Values.deployment.serviceAccount.name }}
+{{- default (include "iris.fullname" .) .Values.deployment.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.deployment.serviceAccount.name }}
 {{- end }}

@@ -6,11 +6,11 @@
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
-  name: {{ include "sirius.fullname" . }}
+  name: {{ include "iris.fullname" . }}
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "sirius.name" . }}
+      app.kubernetes.io/name: {{ include "iris.name" . }}
       app.kubernetes.io/instance: {{ .Release.Name }} 
   minAvailable: {{ .Values.deployment.pdb.minAvailable }}
 {{- end -}}

@@ -2,14 +2,14 @@
 
  SPDX-License-Identifier: Apache-2.0*/}}
 {{- if or .Values.ingress.public.enabled .Values.demo }}
-{{- $fullName := include "sirius.fullname" . }}
+{{- $fullName := include "iris.fullname" . }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ $fullName }}-public
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "sirius.labels" . | nindent 4 }}
+    {{- include "iris.labels" . | nindent 4 }}
   {{- with .Values.ingress.annotations }}
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /$1

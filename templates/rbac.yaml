@@ -6,9 +6,9 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: {{ include "sirius.serviceAccountName" . }}
+  name: {{ include "iris.serviceAccountName" . }}
   labels:
-    {{- include "sirius.labels" . | nindent 4 }}
+    {{- include "iris.labels" . | nindent 4 }}
   {{- with .Values.deployment.serviceAccount.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -19,7 +19,7 @@ metadata:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: {{ include "sirius.fullname" . }}-watcher
+  name: {{ include "iris.fullname" . }}-watcher
   namespace: {{ .Release.Namespace }}
 rules:
   - apiGroups: ["apps"]
@@ -29,20 +29,20 @@ rules:
     resources: ["deployments"]
     verbs: ["list", "patch", "get", "watch"]
     resourceNames:
-      - {{ include "sirius.fullname" . }}
+      - {{ include "iris.fullname" . }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: {{ include "sirius.fullname" . }}-watcher
+  name: {{ include "iris.fullname" . }}-watcher
   namespace: {{ .Release.Namespace }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: {{ include "sirius.fullname" . }}-watcher
+  name: {{ include "iris.fullname" . }}-watcher
 subjects:
   - kind: ServiceAccount
-    name: {{ include "sirius.serviceAccountName" . }}
+    name: {{ include "iris.serviceAccountName" . }}
     namespace: {{ .Release.Namespace }}
 {{- end }}
 {{- end }}

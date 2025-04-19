@@ -6,12 +6,12 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ include "sirius.fullname" . }}-automigrate
+  name: {{ include "iris.fullname" . }}-automigrate
   {{- if .Release.Namespace }}
   namespace: {{ .Release.Namespace }}
   {{- end }}
   labels:
-{{ include "sirius.labels" . | indent 4 }}
+{{ include "iris.labels" . | indent 4 }}
     {{- with .Values.deployment.labels }}
       {{- toYaml . | nindent 4 }}
     {{- end }}

@@ -15,14 +15,14 @@ Already a pro? Just edit this README.md and make it your own. Want to make it ea
 
 ```
 cd existing_repo
-git remote add origin https://gitlab.devops.telekom.de/dhei/teams/galatea/products/sirius/charts/sirius-idp.git
+git remote add origin https://gitlab.devops.telekom.de/dhei/teams/galatea/products/iris/charts/iris-idp.git
 git branch -M main
 git push -uf origin main
 ```
 
 ## Integrate with your tools
 
-- [ ] [Set up project integrations](https://gitlab.devops.telekom.de/dhei/teams/galatea/products/sirius/charts/sirius-idp/-/settings/integrations)
+- [ ] [Set up project integrations](https://gitlab.devops.telekom.de/dhei/teams/galatea/products/iris/charts/iris-idp/-/settings/integrations)
 
 ## Collaborate with your team
 

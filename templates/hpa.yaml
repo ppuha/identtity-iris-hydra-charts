@@ -8,14 +8,14 @@ apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   namespace: {{ .Release.Namespace }}
-  name: {{ include "sirius.fullname" . }}-{{ $realmName }}
+  name: {{ include "iris.fullname" . }}-{{ $realmName }}
   labels:
-    {{- include "sirius.labels" . | nindent 4 }}
+    {{- include "iris.labels" . | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ include "sirius.fullname" . }}-{{ $realmName }}
+    name: {{ include "iris.fullname" . }}-{{ $realmName }}
   minReplicas: {{ $realm.autoscaling.minReplicas }}
   maxReplicas: {{ $realm.autoscaling.maxReplicas }}
   metrics:

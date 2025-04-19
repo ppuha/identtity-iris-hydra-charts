@@ -5,7 +5,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ include "sirius.fullname" . }}-jwks
+  name: {{ include "iris.fullname" . }}-jwks
   namespace: {{ .Release.Namespace }}
   annotations:
     argocd.argoproj.io/hook: PostSync
@@ -46,7 +46,7 @@ spec:
               for realmName in {{ range $realmName, $realm := .Values.realm }}{{ $realmName }} {{ end }}; do
                 echo "==========================================="
                 echo "Create ES256 keys in $realmName realm"
-                HYDRA_ADMIN_SERVICE_PATH=http://{{ include "sirius.fullname" . }}-admin-${realmName}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.service.admin.port }}
+                HYDRA_ADMIN_SERVICE_PATH=http://{{ include "iris.fullname" . }}-admin-${realmName}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.service.admin.port }}
 
                 {{- if .Values.component.sidecar.enabled }}
                 BASIC_AUTH_HEADER="Authorization: Basic $(echo -n $HYDRA_HYDRA_USERNAME:$HYDRA_ADMIN_PASSWORD | base64)"
